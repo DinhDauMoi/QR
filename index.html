@@ -8,12 +8,16 @@
   </head>
   <body>
     <div id="qr-reader" style="width: 600px"></div>
+    <div style="text-align: center" id="id_product">Tên Sản Phẩm</div>
+    <div>Gián sản phẩm</div>
     <script>
+      var id = document.getElementById("id_product");
       function onScanSuccess(decodedText, decodedResult) {
         console.log(`Code scanned = ${decodedText}`, decodedResult);
+        id.innerHTML = `${decodedText}`;
       }
       var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
-        fps: 10,
+        fps: 60,
         qrbox: 250,
       });
       html5QrcodeScanner.render(onScanSuccess);
