@@ -1,80 +1,22 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quét mã vạch</title>
-</head>
-<body>
-  <h1>Quét mã vạch</h1>
-  
-  <!-- Button để kích hoạt camera và quét mã vạch -->
-  <button id="startButton">Kích hoạt camera và quét mã vạch</button>
-  
-  <!-- Hiển thị kết quả sau khi quét -->
-  <div id="result"></div>
-  
-  <!-- Script JavaScript để thực hiện việc quét mã vạch -->
-  <script>
-    // Lấy tham chiếu đến các phần tử DOM
-    const startButton = document.getElementById('startButton');
-    const resultDiv = document.getElementById('result');
-
-    // Xử lý sự kiện khi click vào nút
-    startButton.addEventListener('click', () => {
-      // Kiểm tra nếu trình duyệt hỗ trợ WebRTC
-      if ('MediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-        // Mở camera và kích hoạt quét mã vạch
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-          .then(stream => {
-            const video = document.createElement('video');
-            document.body.appendChild(video);
-            video.srcObject = stream;
-            video.play();
-
-            // Sử dụng thư viện QuaggaJS để quét mã vạch
-            Quagga.init({
-              inputStream: {
-                constraints: {
-                  width: 640,
-                  height: 480,
-                  facingMode: 'environment'
-                }
-              },
-              locator: {
-                patchSize: 'medium',
-                halfSample: true
-              },
-              numOfWorkers: navigator.hardwareConcurrency || 4,
-              decoder: {
-                readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'upc_e_reader']
-              },
-              locate: true
-            }, function (err) {
-              if (err) {
-                console.error(err);
-                return;
-              }
-              console.log('Quagga initialized');
-              Quagga.start();
-            });
-
-            // Xử lý sự kiện khi Quagga quét được mã vạch
-            Quagga.onDetected(result => {
-              resultDiv.innerText = `Mã vạch: ${result.codeResult.code}`;
-              Quagga.stop();
-              stream.getTracks().forEach(track => track.stop());
-              document.body.removeChild(video);
-            });
-          })
-          .catch(err => console.error('Lỗi truy cập camera:', err));
-      } else {
-        alert('Trình duyệt của bạn không hỗ trợ quét mã vạch.');
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+    <title>QR</title>
+  </head>
+  <body>
+    <div id="qr-reader" style="width: 600px"></div>
+    <script>
+      function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Code scanned = ${decodedText}`, decodedResult);
       }
-    });
-  </script>
-
-  <!-- Thư viện QuaggaJS -->
-  <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
-</body>
+      var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
+        fps: 10,
+        qrbox: 250,
+      });
+      html5QrcodeScanner.render(onScanSuccess);
+    </script>
+  </body>
 </html>
