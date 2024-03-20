@@ -8,14 +8,29 @@
   </head>
   <body>
     <div id="qr-reader" style="width: 600px"></div>
-    <div style="text-align: center" id="id_product">Tên Sản Phẩm</div>
-    <div>Gián sản phẩm</div>
+    <div style="align-items: center; margin: 0 auto; justify-content: center; text-align: center;" id="id_product">THÔNG TIN SẢN PHẨM</div>
+
     <script>
       var id = document.getElementById("id_product");
+      var jsonFile = {
+        "1": {"Tên": "Tên sản phẩm 1", "SKU": "Backup mã 1"},
+        "2": {"Tên": "Tên sản phẩm 2", "SKU": "Backup mã 2"},
+        "3": {"Tên": "Tên sản phẩm 3", "SKU": "Backup mã 3"},
+        // Thêm các cặp mã và tên sản phẩm khác ở đây
+      };
+
       function onScanSuccess(decodedText, decodedResult) {
-        console.log(`Code scanned = ${decodedText}`, decodedResult);
-        id.innerHTML = `${decodedText}`;
+        // Tìm kiếm thông tin sản phẩm trong tệp JSON
+        var productInfo = jsonFile[decodedText];
+        if (productInfo) {
+          // Nếu tìm thấy, hiển thị tên sản phẩm và SKU
+          id.innerHTML = `Tên: ${productInfo["Tên"]} <br> SKU: ${productInfo["SKU"]}`;
+        } else {
+          // Nếu không tìm thấy, hiển thị thông báo không tìm thấy
+          id.innerHTML = "Không tìm thấy sản phẩm vui lòng liên hệ với Dinh Đầu Moi để giải đáp thắc mắc";
+        }
       }
+
       var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
         fps: 60,
         qrbox: 250,
